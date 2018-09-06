@@ -1,8 +1,11 @@
 package com.example.aryan.habitgenie;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -78,6 +81,33 @@ public class MainActivity extends AppCompatActivity {
 
     void getAllHabits() {
         HabitEntryHelper habitEntryHelper = new HabitEntryHelper(getApplicationContext());
+        SQLiteDatabase db = habitEntryHelper.getReadableDatabase();
 
+        // projection is which columns in the DB will actually be used in this query.
+        String[] projection = {
+                BaseColumns._ID,
+                HabitEntryContract.HabitEntry.COLUMN_NAME_TITLE,
+                HabitEntryContract.HabitEntry.COLUMN_NAME_SUBTITLE
+        };
+
+        String selection = HabitEntryContract.HabitEntry.COLUMN_NAME_TITLE + " = ? ";
+        String[] selectionArgs = { "My Title" };
+
+        // get the results in descending order
+        String sortOrder =
+                HabitEntryContract.HabitEntry.COLUMN_NAME_SUBTITLE + " DESC";
+
+        // finally generating the query
+
+        Cursor cursor = db.query(
+                HabitEntryContract.HabitEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+        cursor.close();
     }
 }
